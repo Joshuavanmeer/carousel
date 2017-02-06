@@ -11,9 +11,9 @@ export class Carousel {
         this.speed                  = config.speed;
         this.arrowControlPrefs      = config.arrowControlPrefs;
         this.buttonControlPrefs     = config.buttonControlPrefs;
+        this.swipeEnabled           = config.swipeEnabled;
         this.arrowControlsEnabled   = null;
         this.buttonControlsEnabled  = null;
-        this.touchEnabled           = null;
         this.carouselSizeX          = null;
         this.carouselSizeY          = null;
         this.activeSlide            = 0;
@@ -24,7 +24,6 @@ export class Carousel {
 
     // sets up state for carousel
     init() {
-        this.touchEnabled = this.touchAvailable();
         this.renderSlides(this.slides);
     }
 
@@ -42,7 +41,9 @@ export class Carousel {
         this.cachedButtonControls = this.cacheUiControls('button-control');
         this.updateUi();
         this.renderSlides();
-        this.assignEventListeners([this.parent.parentElement], 'click', this.handleClick);
+        this.initSwipe();
+        this.assignEventListeners(this.parent.parentElement, ['click', 'touch'], this.handleClick);
+
     }
 
 
@@ -55,23 +56,40 @@ export class Carousel {
 
 
 
+    handleSwipe (ev) {
+        if (ev.type === 'touchstart') this.handleSwipe.lastPosX = ev.changedTouches[0].clientX;
+        if (ev.type === 'touchend') {
+            const newPosX = ev.changedTouches[0].clientX;
+            const swipeDistanceX = this.handleSwipe.lastPosX - newPosX;
+            const swipeThreshold = Math.abs(swipeDistanceX);
+            if (swipeThreshold > 100) {
+                if (swipeDistanceX > 0) this.moveSlide('right');
+                if (swipeDistanceX < 0) this.moveSlide('left');
+            }
+        }
+    }
 
-    touchEnabled () {
 
+
+    initSwipe () {
+        if (this.swipeEnabled && 'ontouchstart' in document) {
+            alert('swipe enabled');
+            this.assignEventListeners(this.parent.parentElement, ['touchstart', 'touchend'], this.handleSwipe);
+        }
     }
 
 
 
     cacheSlides(className) {
         let slides = Array.from(document.getElementsByClassName(className));
-        let stack = [];
+        let slidesArr = [];
         slides.forEach((slide) => {
-            stack.push({
+            slidesArr.push({
                 id: slide.dataset.id,
                 elem: slide
             });
         });
-        return stack;
+        return slidesArr;
     }
 
 
@@ -102,9 +120,9 @@ export class Carousel {
 
 
     // handles assignment of event listeners
-    assignEventListeners (elems, ev, action) {
-        elems.forEach((elem) => {
-            elem.addEventListener(ev, (ev) => {
+    assignEventListeners (elem, events, action) {
+        events.forEach((event) => {
+            elem.addEventListener(event, (ev) => {
                 action.call(this, ev);
             })
         });
@@ -125,11 +143,11 @@ export class Carousel {
 
     moveSlide(direction, slots = 1) {
         let newSlotPosition;
-        if (direction === 'left') {
+        if (direction === 'left' && this.activeSlide !== 0) {
             newSlotPosition = - (this.activeSlide - slots);
             this.activeSlide--;
         }
-        else if (direction === 'right') {
+        else if (direction === 'right' && this.activeSlide !== this.cachedSlides.length - 1) {
             newSlotPosition = -(this.activeSlide + slots);
             this.activeSlide++;
         }
@@ -168,8 +186,6 @@ export class Carousel {
             if (arrowLeft.classList.contains(inactiveClass)) arrowLeft.classList.remove(inactiveClass);
             if (arrowRight.classList.contains(inactiveClass)) arrowRight.classList.remove(inactiveClass);
         }
-
-
     }
 
 
@@ -187,7 +203,7 @@ export class Carousel {
 
 
     renderSlides() {
-        this.parent.style.width = this.carouselSizeX * 3 + 'px';
+        this.parent.style.width = this.carouselSizeX * this.cachedSlides.length + 'px';
     }
 
 
