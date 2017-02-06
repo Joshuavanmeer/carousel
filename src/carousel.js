@@ -15,43 +15,64 @@ export class Carousel {
         this.arrowControlsEnabled   = null;
         this.buttonControlsEnabled  = null;
         this.carouselSizeX          = null;
-        this.carouselSizeY          = null;
         this.activeSlide            = 0;
 
     }
 
 
 
-    // sets up state for carousel
-    init() {
-        this.renderSlides(this.slides);
+    init () {
+        this.build()
+        let debounceResize = this.debounce();
+        this.assignEventListeners(window, ['resize'], debounceResize, this.initResize);
+        this.assignEventListeners(this.parent.parentElement, ['click', 'touch'], this.handleClick);
     }
 
 
 
-
-    initTest() {
+    build () {
         this.carouselSizeX = this.getCarouselDimension('x');
-        this.carouselSizeY = this.getCarouselDimension('y');
-        this.arrowControlsEnabled = this.isControlEnabled(this.arrowControlPrefs);
+        this.arrowControlsEnabled  = this.isControlEnabled(this.arrowControlPrefs);
         this.buttonControlsEnabled = this.isControlEnabled(this.buttonControlPrefs);
         this.cachedSlides = this.cacheSlides('slide');
         this.renderUI();
-        this.cachedArrowControls = this.cacheUiControls('arrow-control');
-        this.cachedButtonControls = this.cacheUiControls('button-control');
-        this.updateUi();
+        if (this.arrowControlsEnabled) this.cachedArrowControls = this.cacheUiControls('arrow-control');
+        if (this.buttonControlsEnabled) this.cachedButtonControls = this.cacheUiControls('button-control');
+        if (this.buttonControlsEnabled || this.arrowControlsEnabled) this.updateUi();
         this.renderSlides();
         this.initSwipe();
-        this.assignEventListeners(this.parent.parentElement, ['click', 'touch'], this.handleClick);
-
     }
 
 
 
-    // returns screen dimensions
+    initResize () {
+        this.build();
+        this.moveSlide('manual', this.activeSlide);
+        this.initSwipe();
+    }
+
+
+
+    // sets a delay to fend off repeating resize events
+    debounce () {
+        let pending = false;
+        return function (ev, cbfn) {
+            if (!pending) {
+                pending = true;
+                setTimeout(() => {
+                    pending = false;
+                    cbfn.call(this, ev);
+                }, 1000)
+            }
+        }
+    }
+
+
+
+    // returns carousel parent dimensions
     getCarouselDimension(dimension) {
         const unit = dimension === 'x' ? 'Width' : 'Height';
-        return this.parent['offset' + unit];
+        return this.parent.parentElement['offset' + unit];
     }
 
 
@@ -73,7 +94,6 @@ export class Carousel {
 
     initSwipe () {
         if (this.swipeEnabled && 'ontouchstart' in document) {
-            alert('swipe enabled');
             this.assignEventListeners(this.parent.parentElement, ['touchstart', 'touchend'], this.handleSwipe);
         }
     }
@@ -120,10 +140,10 @@ export class Carousel {
 
 
     // handles assignment of event listeners
-    assignEventListeners (elem, events, action) {
+    assignEventListeners (elem, events, action, args) {
         events.forEach((event) => {
             elem.addEventListener(event, (ev) => {
-                action.call(this, ev);
+                action.call(this, ev, args);
             })
         });
     }
@@ -138,6 +158,8 @@ export class Carousel {
         }
         else return false;
     }
+
+
 
 
 

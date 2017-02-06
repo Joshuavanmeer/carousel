@@ -8,6 +8,4 @@ const sweetCarousel = new Carousel({
     arrowControlPrefs: [{min: 0, max: 2000}]
 });
 
-
-
-sweetCarousel.initTest();
+sweetCarousel.init();
