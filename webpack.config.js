@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        index: __dirname + '/src/carousel.js',
+        index: __dirname + '/src/demo.js',
     },
     output: {
         path: __dirname + '/build',

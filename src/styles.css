@@ -1,0 +1,75 @@
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+* {
+    transition: transform .5s ease-in-out;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: black;
+}
+
+#wrapper {
+    overflow: hidden;
+}
+
+#slide-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+
+#ui-controls {
+    position: absolute;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    z-index: 100;
+}
+
+#ui-controls button:first-child {
+    order: 1;
+}
+
+#ui-controls button:nth-child(2) {
+    order: 3;
+}
+
+#ui-controls div {
+    order: 2;
+    z-index: 11;
+    align-self: flex-end;
+}
+
+.slide {
+    width: 100%;
+    height: 100%;
+    background: grey;
+    border: 35px solid green;
+}
+
+.slide img {
+   width: 100%;
+    height: 100%;
+}
+
+.arrow-control {
+    height: 50px;
+}
+
+.inactive {
+    opacity: .1;
+}
+
+button {
+    padding: 20px 50px;
+}
+
+
