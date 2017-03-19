@@ -5,7 +5,7 @@ const sweetCarousel = new Carousel({
     uiControls: 'ui-controls',
     swipeEnabled: true,
     buttonControlPrefs: [{min: 0, max: 2000}],
-    arrowControlPrefs: [{min: 0, max: 2000}]
+    arrowControlPrefs: [{min: 0, max: 3000}]
 });
 
 sweetCarousel.init();

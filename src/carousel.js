@@ -236,13 +236,13 @@ export class Carousel {
         let template = '';
         this.uiControls.innerHTML = '';
         if (this.arrowControlsEnabled) {
-            template += `<button data-action="left" class="arrow-control" id="arrow-left" type="button"><==</button>
-                         <button data-action="right" class="arrow-control" id="arrow-right" type="button">==></button>`
+            template += `<button data-action="left" class="arrow-control" id="arrow-left" type="button"></button>
+                         <button data-action="right" class="arrow-control" id="arrow-right" type="button"></button>`
         }
         if (this.buttonControlsEnabled) {
             template += `<div id="button-controls">`;
             for (let i = 0, j = this.cachedSlides.length; i < j; i++) {
-                template += `<button data-id="${i}" data-action="manual" type="button" class="button-control">O</button>`
+                template += `<button data-id="${i}" data-action="manual" type="button" class="button-control"></button>`
             }
             template += `</div>`;
         }
